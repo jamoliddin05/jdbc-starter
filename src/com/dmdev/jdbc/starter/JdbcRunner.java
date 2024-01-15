@@ -1,17 +1,38 @@
 package com.dmdev.jdbc.starter;
 
+import com.dmdev.jdbc.starter.dao.TicketDao;
+import com.dmdev.jdbc.starter.dto.TicketFilter;
+import com.dmdev.jdbc.starter.entity.Ticket;
 import com.dmdev.jdbc.starter.util.ConnectionManager;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 
 public class JdbcRunner {
 
     public static void main(String[] args) throws SQLException {
-        try {
-            selectScript();
-        } finally {
-            ConnectionManager.closePool();
-        }
+        var ticketFilter = new TicketFilter(3, 0, "Евгений Кудрявцев", "A1");
+        var tickets = TicketDao.getInstance().findAll(ticketFilter);
+        tickets.forEach(System.out::println);
+    }
+
+    private static void deleteTest(Long id) {
+        var ticketDao = TicketDao.getInstance();
+        var deleteResult = ticketDao.delete(id);
+        System.out.println(deleteResult);
+    }
+
+    private static void saveTest() {
+        var ticketDao = TicketDao.getInstance();
+        var ticket = new Ticket();
+        ticket.setPassengerNo("1234567");
+        ticket.setPassengerName("Test");
+        ticket.setFlightId(3L);
+        ticket.setSeatNo("B3");
+        ticket.setCost(BigDecimal.TEN);
+
+        var savedTicket = ticketDao.save(ticket);
+        System.out.println(savedTicket);
     }
 
     private static void selectScript() throws SQLException {
